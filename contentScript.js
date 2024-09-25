@@ -1,42 +1,23 @@
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.action === "startMonitoring") {
-        console.log('Received message from background script:', message);
+const targetNode = document.querySelector('span[title^="Estado del siniestro"]');
 
-        const waitForElement = (selector, callback) => {
-            const element = document.querySelector(selector);
-            if (element) {
-                callback(element);
-            } else {
-                setTimeout(() => waitForElement(selector, callback), 500);
+const observer = new MutationObserver((mutationsList) => {
+    for (const mutation of mutationsList) {
+        if (mutation.type === 'childList') {
+            const estado = targetNode.innerText.trim();
+            const numNota = document.querySelector('span[title="Número de iTramit"]').textContent.trim().replace(/[^0-9]/g, '').trim();
+
+            if (estado === "CERRADO") {
+                const mensaje = `La nota ${numNota} ha cambiado a estado CERRADO.`;
+		sendWhatsAppMessage(mensaje);
             }
-        };
-
-        waitForElement('span[title^="Estado del siniestro:"]', (targetNode) => {
-            console.log("Target node found:", targetNode);
-
-            const config = { childList: true, subtree: true, characterData: true };
-            const observer = new MutationObserver((mutationsList) => {
-                for (const mutation of mutationsList) {
-                    if (mutation.target && mutation.target.innerText) {
-                        const newState = mutation.target.innerText.trim();
-                        console.log("New state detected:", newState);
-
-                        if (newState === 'CERRADO') {
-                            const noteNumber = document.querySelector('span[title="Número de iTramit"]')?.innerText.trim();
-                            console.log("Note number detected:", noteNumber);
-
-                            if (noteNumber) {
-                                const phoneNumber = '675837275'; 
-                                const message = encodeURIComponent(`La nota con número "${noteNumber}" ha cambiado de estado a CERRADO.`);
-                                const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
-                                window.open(whatsappUrl, '_blank');
-                            }
-                        }
-                    }
-                }
-            });
-
-            observer.observe(targetNode, config);
-        });
+        }
     }
 });
+
+observer.observe(targetNode, { childList: true, subtree: true });
+
+function sendWhatsAppMessage(message) {  
+	phoneNumber = '34123123123';  //edit with your phone number  
+	const url = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${message}`;
+    	window.open(url, '_blank');
+}
