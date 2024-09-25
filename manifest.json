@@ -9,7 +9,7 @@
     },
     "content_scripts": [
       {
-        "matches": ["https://www.example.com/*"],
+        "matches": ["https://itramit.es/v2/VSiniestros/show?expediente=*"],
         "js": ["contentScript.js"]
       }
     ]
