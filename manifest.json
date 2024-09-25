@@ -1,17 +1,22 @@
 {
-    "manifest_version": 3,
-    "name": "Invoice Monitor Extension",
-    "version": "1.0",
-    "description": "Monitoriza cambios en facturas y envía mensajes de WhatsApp.",
-    "permissions": ["activeTab", "scripting"],
-    "action": {
-      "default_popup": "popup.html"
-    },
-    "content_scripts": [
-      {
-        "matches": ["https://itramit.es/v2/VSiniestros/show?expediente=*"],
-        "js": ["contentScript.js"]
-      }
-    ]
+  "manifest_version": 3,
+  "name": "Nota Monitor",
+  "version": "1.0",
+  "permissions": [
+    "tabs",
+    "activeTab",
+    "scripting"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://itramit.es/v2/VSiniestros/show*"],
+      "js": ["contentScript.js"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html"
   }
-  
+}
